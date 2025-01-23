@@ -34,6 +34,12 @@ var (
 		Layout: "2006-01-02",
 		Value:  cli.NewTimestamp(time.Now().Add(-7 * 24 * time.Hour)),
 	}
+
+	PagesFlag = &cli.IntFlag{
+		Name:  "pages",
+		Usage: "how many pages back to look",
+		Value: 10,
+	}
 )
 
 // Commands
@@ -46,6 +52,7 @@ var commands = []*cli.Command{
 			GithubTokenFlag,
 			GithubRepoFlag,
 			SinceFlag,
+			PagesFlag,
 		},
 	},
 }

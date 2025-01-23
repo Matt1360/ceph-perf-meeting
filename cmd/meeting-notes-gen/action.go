@@ -18,6 +18,7 @@ func action(cctx *cli.Context) error {
 	tok := cctx.String(GithubTokenFlag.Name)
 	repoflag := cctx.String(GithubRepoFlag.Name)
 	sinceptr := cctx.Timestamp(SinceFlag.Name)
+	pages := cctx.Int(PagesFlag.Name)
 
 	if sinceptr == nil {
 		return errors.New("invalid time")
@@ -74,16 +75,18 @@ func action(cctx *cli.Context) error {
 			} else if updated.Before(since.Add(-60 * 24 * time.Hour)) {
 				// probably beyond no-movement, very stale
 			} else {
-				// If it's merged, but before our "since" check, drop it
-				if merged.IsZero() {
+				// No movement includes things that are not merged, and are not closed
+				// (open things that haven't been updated in a while)
+				// and we'll drop anything else on the floor
+				if merged.IsZero() && closed.IsZero() {
 					prNoMovement = append(prNoMovement, pr)
 				}
 			}
 		}
 	}()
 
-	// Blindly scan the first 5 pages
-	for i := 1; i < 5; i++ {
+	// Scan as many pages as we were asked to
+	for i := 1; i <= pages; i++ {
 		pg := i
 		g.Go(func() error {
 			// Get all of them that are merging into master (skips backports)
