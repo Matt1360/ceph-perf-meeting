@@ -191,6 +191,14 @@ func prDump(prs []*github.PullRequest, repo string) {
 			submitter = fmt.Sprintf("%s (%s)", submitter, company)
 		}
 
+		// Stale check
+		stale := false
+		for _, l := range pr.Labels {
+			if l.GetName() == "stale" {
+				stale = true
+			}
+		}
+
 		icon := ""
 		if isDraft {
 			icon += " ✏️"
@@ -215,6 +223,10 @@ func prDump(prs []*github.PullRequest, repo string) {
 		// stored in the merged_by field, which is a dirty hack above
 		if merged.IsZero() && !closed.IsZero() {
 			fmt.Printf(" closed by %s", pr.GetMergedBy().GetLogin())
+		}
+
+		if stale {
+			fmt.Printf(" (💀 stale)")
 		}
 
 		fmt.Printf("\n")
