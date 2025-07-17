@@ -32,7 +32,7 @@ func action(cctx *cli.Context) error {
 	owner := toks[0]
 	repo := toks[1]
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+	ctx, cancel := context.WithTimeout(cctx.Context, 10*time.Minute)
 	defer cancel()
 
 	var prNew []*github.PullRequest
