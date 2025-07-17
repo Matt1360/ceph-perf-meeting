@@ -191,11 +191,14 @@ func prDump(prs []*github.PullRequest, repo string) {
 			submitter = fmt.Sprintf("%s (%s)", submitter, company)
 		}
 
-		// Stale check
+		// Label checks
 		stale := false
+		needsRebase := false
 		for _, l := range pr.Labels {
 			if l.GetName() == "stale" {
 				stale = true
+			} else if l.GetName() == "needs-rebase" {
+				needsRebase = true
 			}
 		}
 
@@ -227,6 +230,9 @@ func prDump(prs []*github.PullRequest, repo string) {
 
 		if stale {
 			fmt.Printf(" (💀 stale)")
+		}
+		if needsRebase {
+			fmt.Printf(" (💀 needs rebase)")
 		}
 
 		fmt.Printf("\n")
